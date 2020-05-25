@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>vue源码学习</title>
+</head>
+<body>
+	<div id="app">
+		{{message}}
+		<p>
+			<!-- 使用router-link组件来导航 -->
+			<!-- 通过传入'to'属性指定链接 -->
+			<!-- router-link默认会被渲染成一个a标签 -->
+			<router-link to="/foo">Foo</router-link>
+			<router-link to="/bar">Bar</router-link>
+		</p>
+		<!-- 路由出口 -->
+		<!-- 路由匹配到的组件将渲染到这里 -->
+	</div>
+	<script src="./vue.js"></script>
+	<script src="./vue-router.js"></script>
+	<!-- <script src="./vue_self.js"></script> -->
+	<script>
+		const Foo = {template: '<div>Foo</div>'};
+		const Bar = {template: '<div>Bar</div>'};
+		const routes = [
+			{
+				path: '/foo',
+				name: 'Foo',
+				component: Foo
+			}, {
+				path: '/bar',
+				name: 'Bar',
+				component: Bar,
+			}
+		];
+		const router = new VueRouter({
+			routes
+		});
+		let vue = new Vue({
+			// el: '#app',
+			router,
+			data: {
+				message: 'Hello Vue!'
+			}
+		}).$mount('#app');
+	</script>
+</body>
+</html>
