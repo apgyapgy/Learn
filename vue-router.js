@@ -3,6 +3,10 @@
   * (c) 2018 Evan You
   * @license MIT
   */
+/*
+    通过push操作修改route, 
+    从而触发setter完成路由组件router-view的重新渲染
+ */
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' 
         ? module.exports = factory() 
@@ -46,6 +50,7 @@
             }
         },
         render: function render (_, ref) {
+            console.log('router-view render:', _, ref);
             var props = ref.props;
             var children = ref.children;
             var parent = ref.parent;
@@ -456,7 +461,7 @@
             classes[activeClass] = this.exact
                 ? classes[exactActiveClass]
                 : isIncludedRoute(current, compareTarget);
-
+            // console.log('classes:', classes)
             var handler = function (e) {
                 if (guardEvent(e)) {
                     if (this$1.replace) {
@@ -1584,7 +1589,7 @@
         path,
         params
     ) {
-        console.log('matchRoute:', arguments);
+        // console.log('matchRoute:', arguments);
         var m = path.match(regex);
 
         if (!m) {
@@ -1601,7 +1606,6 @@
                 params[key.name || 'pathMatch'] = val;
             }
         }
-
         return true
     }
 
@@ -1635,7 +1639,7 @@
         from,
         isPop
     ) {
-        if (!router.app) {
+        if (!router.app) {//配置了router的Vue根实例
             return
         }
 
@@ -1970,11 +1974,14 @@
     History.prototype.onError = function onError (errorCb) {
         this.errorCbs.push(errorCb);
     };
-
+    //根据router的match函数，生成一个新的route对象
     History.prototype.transitionTo = function transitionTo (location, onComplete, onAbort) {
         var this$1 = this;
 
         var route = this.router.match(location, this.current);
+        //对比一下新生成的route和当前的route对象是否改变，改变的话触发updateRoute
+        //更新hsitory.current属性，触发根组件的_route的变化,
+        //从而导致组件的调用render函数，更新router-view
         this.confirmTransition(route, function () {
             this$1.updateRoute(route);
             onComplete && onComplete(route);
@@ -2015,6 +2022,7 @@
             }
             onAbort && onAbort(err);
         };
+        //进入相同的路由，直接调用abort回调函数，函数退出
         if (
             isSameRoute(route, current) &&
             // in the case the route map has been dynamically appended to
@@ -2537,7 +2545,7 @@
         // console.log('VueRouter:', options);
         if ( options === void 0 ) options = {};
 
-        this.app = null;
+        this.app = null;//配置了router的Vue根实例
         this.apps = [];
         this.options = options;
         this.beforeHooks = [];
@@ -2584,7 +2592,7 @@
         return this.matcher.match(raw, current, redirectedFrom)
     };
 
-    prototypeAccessors.currentRoute.get = function () {
+    prototypeAccessors.currentRoute.get = function () { //当前路由对应的路由信息对象
         return this.history && this.history.current
     };
 
@@ -2620,7 +2628,7 @@
                 setupHashListener
             );
         }
-
+        //当路由改变时对_route进行重新赋值从而触发组件更新
         history.listen(function (route) {
             this$1.apps.forEach(function (app) {
                 app._route = route;

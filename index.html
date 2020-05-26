@@ -9,28 +9,41 @@
 		{{message}}
 		<p>
 			<!-- 使用router-link组件来导航 -->
-			<!-- 通过传入'to'属性指定链接 -->
+			<!-- 通过传入'to'属性指定链接 - ->
 			<!-- router-link默认会被渲染成一个a标签 -->
 			<router-link to="/foo">Foo</router-link>
 			<router-link to="/bar">Bar</router-link>
 		</p>
 		<!-- 路由出口 -->
 		<!-- 路由匹配到的组件将渲染到这里 -->
+		<router-view></router-view>
 	</div>
 	<script src="./vue.js"></script>
 	<script src="./vue-router.js"></script>
 	<!-- <script src="./vue_self.js"></script> -->
 	<script>
-		const Foo = {template: '<div>Foo</div>'};
-		const Bar = {template: '<div>Bar</div>'};
+		const Foo = {
+			template: '<div>Foo</div>',
+			mounted() {
+				console.log('aaa');
+			}
+		};
+		const Bar = {
+			template: "<div>Bar{{$route.params.a}}</div>",
+			mounted() {
+				console.log('bbb');
+				// console.log('params:', this.$route.params)
+			}
+		};
 		const routes = [
 			{
 				path: '/foo',
 				name: 'Foo',
 				component: Foo
 			}, {
-				path: '/bar',
+				path: '/bar/:a',
 				name: 'Bar',
+				// alias: '/ali',
 				component: Bar,
 			}
 		];
